@@ -1,0 +1,11 @@
+# dados da casa (telefones, chave Pix)
+config.js
+
+# estado do bot, sessão do WhatsApp, comprovantes e fotos
+dados/
+.wwebjs_cache/
+
+node_modules/
+servidor/chrome-path.txt
+*.tgz
+*.log

@@ -1,0 +1,23 @@
+{
+  "name": "bot-casa",
+  "version": "1.0.0",
+  "description": "Bot de WhatsApp que organiza as tarefas de uma república: rodízio justo, lembretes, multas com comprovante, descontos e férias",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "testar": "node src/index.js --enviar-agora",
+    "simular": "node scripts/simular.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["whatsapp", "bot", "whatsapp-web.js", "tarefas", "republica"],
+  "author": "Maria Antonia Baraldi Névoa",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.0"
+  }
+}
