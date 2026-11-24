@@ -60,7 +60,9 @@ sudo npm install -g pm2
 sudo env PATH="$PATH" pm2 startup systemd -u "${USER:-$(whoami)}" --hp "$HOME" > /dev/null || echo "    ⚠️  não consegui configurar o pm2 para ligar junto com o servidor; rode: pm2 startup"
 # backup diário às 3h da manhã
 chmod +x servidor/*.sh
-( crontab -l 2>/dev/null | grep -v 'servidor/backup.sh' ; echo "0 3 * * * bash $PASTA/servidor/backup.sh" ) | crontab -
+# (sem crontab ainda, o crontab -l e o grep "falham"; o || true evita que o set -e pare o script aqui)
+AGENDA_ATUAL="$(crontab -l 2>/dev/null | grep -v 'servidor/backup.sh' || true)"
+printf '%s\n%s\n' "$AGENDA_ATUAL" "0 3 * * * bash $PASTA/servidor/backup.sh" | sed '/^$/d' | crontab -
 
 echo
 echo "✅ Instalação concluída."

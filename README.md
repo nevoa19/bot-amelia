@@ -300,7 +300,7 @@ A pasta `casa/` não sabe que o WhatsApp existe: recebe o estado e devolve resul
 **Requisitos:** Node.js 18 ou mais novo e um número de WhatsApp só para o bot (um chip ou eSIM pré-pago, com o WhatsApp Business instalado).
 
 ```bash
-git clone https://github.com/nevoa19/bot-casa.git
+git clone https://github.com/nevoa19/bot-amelia.git bot-casa
 cd bot-casa
 npm install
 cp config.exemplo.js config.js   # no Windows: copy config.exemplo.js config.js
