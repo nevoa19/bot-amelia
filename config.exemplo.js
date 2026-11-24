@@ -58,6 +58,8 @@ module.exports = {
   // liberarApos: só pode ser marcada como feita depois deste horário
   // pessoas: (opcional) só essas entram no rodízio dessa tarefa
   // diferenteDe: (opcional) não pode cair para quem fez essa outra tarefa por último
+  // foraDoEquilibrio: (opcional) não entra na conta de pontos; alterna só pelo número de vezes
+  //                   (ex.: caixa de areia, que é só das donas dos gatos)
   tarefas: [
     // --- diárias e a cada poucos dias ---
     { id: 'varrer',   nome: 'Varrer ou aspirar a casa',                                     tipo: 'rodizio', frequencia: 1, pontos: 2, multa: 3 },
@@ -66,7 +68,7 @@ module.exports = {
     { id: 'lixo',     nome: 'Tirar o lixo (cozinha e recicláveis)',                         tipo: 'rodizio', frequencia: 2, deslocamento: 1, pontos: 1, multa: 5 },
     { id: 'area',     nome: 'Lavar a área',                                                 tipo: 'rodizio', frequencia: 3, deslocamento: 0, pontos: 3, multa: 4 },
     { id: 'banheiro', nome: 'Lavar o banheiro, tirar o lixo do banheiro e trocar o tapete', tipo: 'rodizio', frequencia: 3, deslocamento: 1, pontos: 4, multa: 6, pessoas: ['Ana', 'Carol'] },
-    { id: 'gata',     nome: 'Limpar a caixinha da gata',                                    tipo: 'fixa', responsavel: 'Ana', frequencia: 1, pontos: 1, multa: 2 },
+    { id: 'gata',     nome: 'Limpar a caixa de areia dos gatos',                            tipo: 'rodizio', pessoas: ['Ana', 'Bia'], foraDoEquilibrio: true, frequencia: 1, pontos: 1, multa: 2 },
     { id: 'louca',    nome: 'Lavar a sua louça',                                            tipo: 'individual', frequencia: 1, pontos: 1, multa: 8, liberarApos: '20:00' },
 
     // --- semanais ---

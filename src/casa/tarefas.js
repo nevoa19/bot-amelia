@@ -100,8 +100,10 @@ function aceitarTroca(estado, data, quem) {
   const item = acharItem(gerarDia(estado, data), troca.numero);
   item.pessoa = quem;
   // os pontos acompanham quem realmente fez
-  estado.carga[troca.de] -= item.pontos;
-  estado.carga[quem] += item.pontos;
+  if (!item.foraDoEquilibrio) {
+    estado.carga[troca.de] -= item.pontos;
+    estado.carga[quem] += item.pontos;
+  }
   estado.trocas = estado.trocas.filter(t => t !== troca);
   return { ok: true, msg: `🔁 Combinado! "${item.nome}" agora é da ${quem}.`, de: troca.de };
 }

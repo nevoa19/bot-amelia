@@ -4,6 +4,9 @@
 // as tarefas mais pesadas são distribuídas primeiro, e cada uma vai para quem tem menos pontos
 // acumulados até agora (histórico + o que já recebeu hoje). Com o tempo os pontos se equilibram,
 // mesmo com tarefas de frequências diferentes.
+//
+// Tarefas com `foraDoEquilibrio` (ex.: caixa de areia, que é só das donas dos gatos) não entram
+// nessa conta de pontos: elas só alternam entre as pessoas pelo número de vezes.
 const { config, nomesDasPessoas } = require('../configuracao');
 const { somarDias, diasEntre } = require('../util/datas');
 const { emFerias, pessoasEmCasa } = require('./ausencias');
@@ -22,7 +25,7 @@ function tarefasDoCalendario(data) {
 }
 
 function novoItem(numero, tarefa, pessoa, tipo) {
-  return {
+  const item = {
     n: numero,
     tarefaId: tarefa.id,
     nome: tarefa.nome,
@@ -33,6 +36,8 @@ function novoItem(numero, tarefa, pessoa, tipo) {
     feita: false,
     tipo,
   };
+  if (tarefa.foraDoEquilibrio) item.foraDoEquilibrio = true;
+  return item;
 }
 
 // Quem fez essa tarefa por último (hoje ou nos 7 dias anteriores). Usado no "quem estende não recolhe".
@@ -58,8 +63,8 @@ function escolherResponsavel(estado, tarefa, candidatas, cargaDeHoje, data) {
 
   const ordenadas = [...candidatas];
   ordenadas.sort((a, b) => {
-    // tarefa restrita (ex.: banheiro só entre duas): alterna por número de vezes
-    if (tarefa.pessoas) {
+    // tarefa restrita (ex.: banheiro só entre duas) ou fora do equilíbrio: alterna por número de vezes
+    if (tarefa.pessoas || tarefa.foraDoEquilibrio) {
       const vezesA = contagem[a] || 0;
       const vezesB = contagem[b] || 0;
       if (vezesA !== vezesB) return vezesA - vezesB;
@@ -153,17 +158,20 @@ function gerarDia(estado, data) {
     itens.push(novoItem(numero, tarefa, escolhida, 'rodizio'));
     numero++;
 
-    const pontos = tarefa.pontos || 1;
-    cargaDeHoje[escolhida] += pontos;
-    pontosDistribuidos += pontos;
+    if (!tarefa.foraDoEquilibrio) {
+      const pontos = tarefa.pontos || 1;
+      cargaDeHoje[escolhida] += pontos;
+      pontosDistribuidos += pontos;
+    }
 
-    if (tarefa.pessoas) {
+    if (tarefa.pessoas || tarefa.foraDoEquilibrio) {
       if (!estado.contagem[tarefa.id]) estado.contagem[tarefa.id] = {};
       const contagem = estado.contagem[tarefa.id];
       contagem[escolhida] = (contagem[escolhida] || 0) + 1;
       // viagem sem compensação: quem está fora conta como se tivesse feito a vez dela
+      const grupo = tarefa.pessoas || todas;
       for (const nome of viajando) {
-        if (tarefa.pessoas.includes(nome)) contagem[nome] = (contagem[nome] || 0) + 1;
+        if (grupo.includes(nome)) contagem[nome] = (contagem[nome] || 0) + 1;
       }
     }
   }
@@ -180,7 +188,7 @@ function gerarDia(estado, data) {
   // Atualiza o placar de esforço. Quem está viajando ganha a média do dia,
   // para não voltar com uma pilha de tarefas (viagem sem compensação).
   for (const item of itens) {
-    if (!item.atrasada && item.tipo === 'rodizio') {
+    if (!item.atrasada && item.tipo === 'rodizio' && !item.foraDoEquilibrio) {
       estado.carga[item.pessoa] = (estado.carga[item.pessoa] || 0) + item.pontos;
     }
   }

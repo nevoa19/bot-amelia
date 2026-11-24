@@ -12,7 +12,7 @@ function pontosDoRodizio(estado, inicio, fim) {
   const pontos = { Ana: 0, Bia: 0, Carol: 0 };
   for (let data = inicio; data <= fim; data = somarDias(data, 1)) {
     for (const item of estado.dias[data].itens) {
-      if (item.tipo === 'rodizio' && !item.atrasada) pontos[item.pessoa] += item.pontos;
+      if (item.tipo === 'rodizio' && !item.atrasada && !item.foraDoEquilibrio) pontos[item.pessoa] += item.pontos;
     }
   }
   return pontos;
@@ -43,13 +43,46 @@ test('banheiro só entre as pessoas configuradas, alternando', () => {
   assert.ok(Math.abs(vezes.Ana - vezes.Carol) <= 1);
 });
 
-test('a tarefa fixa é sempre da mesma pessoa e a louça é de cada uma', () => {
+test('caixa de areia alterna só entre as donas dos gatos e fica fora dos pontos', () => {
   const estado = estadoVazio();
-  const dia = gerarDia(estado, INICIO);
-  const gata = dia.itens.filter(item => item.tarefaId === 'gata');
-  const louca = dia.itens.filter(item => item.tarefaId === 'louca');
-  assert.deepStrictEqual(gata.map(item => item.pessoa), ['Ana']);
+  viverPeriodo(estado, INICIO, somarDias(INICIO, 27));
+
+  const vezes = { Ana: 0, Bia: 0, Carol: 0 };
+  let pontosQueContam = 0;
+  for (const data in estado.dias) {
+    for (const item of estado.dias[data].itens) {
+      if (item.tarefaId === 'gata') vezes[item.pessoa]++;
+      else if (item.tipo === 'rodizio' && !item.atrasada) pontosQueContam += item.pontos;
+    }
+  }
+  assert.strictEqual(vezes.Carol, 0);
+  assert.strictEqual(vezes.Ana + vezes.Bia, 28, 'uma vez por dia');
+  assert.ok(Math.abs(vezes.Ana - vezes.Bia) <= 1, `Ana ${vezes.Ana} x Bia ${vezes.Bia}`);
+
+  // a carga de esforço só soma as outras tarefas
+  const cargaTotal = estado.carga.Ana + estado.carga.Bia + estado.carga.Carol;
+  assert.strictEqual(cargaTotal, pontosQueContam);
+});
+
+test('a louça é de cada uma', () => {
+  const louca = gerarDia(estadoVazio(), INICIO).itens.filter(item => item.tarefaId === 'louca');
   assert.deepStrictEqual(louca.map(item => item.pessoa).sort(), ['Ana', 'Bia', 'Carol']);
+});
+
+test('tarefa fixa é sempre da mesma pessoa e não entra nos pontos', () => {
+  const { config } = require('../src/configuracao');
+  // o exemplo não tem tarefa fixa, então coloco uma só neste teste
+  config.tarefas.push({ id: 'planta', nome: 'Regar as plantas', tipo: 'fixa', responsavel: 'Carol', frequencia: 1, pontos: 1, multa: 1 });
+  try {
+    const estado = estadoVazio();
+    viverPeriodo(estado, INICIO, somarDias(INICIO, 6));
+    for (const data in estado.dias) {
+      const regar = estado.dias[data].itens.filter(item => item.tarefaId === 'planta');
+      assert.deepStrictEqual(regar.map(item => item.pessoa), ['Carol'], data);
+    }
+  } finally {
+    config.tarefas.pop();
+  }
 });
 
 test('quem estende a roupa nunca é quem recolhe', () => {
@@ -103,7 +136,7 @@ test('atrasar não muda a divisão das semanas seguintes (ninguém sai ganhando)
 
   // uma tarefa da Bia que não cai de novo no dia seguinte (senão as duas viram uma só)
   const { config } = require('../src/configuracao');
-  const naoDiaria = item => config.tarefas.some(t => t.id === item.tarefaId && t.frequencia > 1);
+  const naoDiaria = item => config.tarefas.some(t => t.id === item.tarefaId && t.frequencia > 1 && !t.foraDoEquilibrio);
   const escolhida = gerarDia(estadoVazio(), INICIO).itens.find(item => item.pessoa === 'Bia' && item.tipo === 'rodizio' && naoDiaria(item));
   assert.ok(escolhida, 'a Bia precisa ter uma tarefa não diária no primeiro dia');
 

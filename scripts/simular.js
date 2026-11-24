@@ -29,13 +29,13 @@ for (let i = 0; i < semanas * 7; i++) {
 
   for (const item of dia.itens) {
     item.feita = true;
-    if (item.tipo === 'rodizio') pontosRodizio[item.pessoa] += item.pontos;
+    if (item.tipo === 'rodizio' && !item.foraDoEquilibrio) pontosRodizio[item.pessoa] += item.pontos;
   }
   fecharDia(estado, data);
   data = somarDias(data, 1);
 }
 
-console.log(`\nPontos de esforço do rodízio em ${semanas} semanas (fora a louça e as tarefas fixas):`);
+console.log(`\nPontos de esforço do rodízio em ${semanas} semanas (fora a louça e as tarefas fora do equilíbrio):`);
 for (const nome of nomesDasPessoas()) {
   console.log(`  ${nome.padEnd(8)} ${pontosRodizio[nome]}`);
 }

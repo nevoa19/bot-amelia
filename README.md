@@ -4,7 +4,7 @@ Bot de WhatsApp que organiza as tarefas de uma república: divide o trabalho de 
 
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
 ![whatsapp-web.js](https://img.shields.io/badge/whatsapp--web.js-1.34-25D366?logo=whatsapp&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-58%20passando-brightgreen)
+![Testes](https://img.shields.io/badge/testes-61%20passando-brightgreen)
 ![Dependências](https://img.shields.io/badge/depend%C3%AAncias-3-blue)
 ![Licença PolyForm Noncommercial](https://img.shields.io/badge/licen%C3%A7a-PolyForm%20Noncommercial-orange)
 
@@ -73,7 +73,7 @@ Exemplos reais das mensagens (gerados pelo próprio bot com a configuração de 
 🏠 Tarefas de quarta, 09/12
 
 Ana
-▫️ 1. Limpar a caixinha da gata
+▫️ 1. Limpar a caixa de areia dos gatos
 ▫️ 2. Limpar mesa, balcões da cozinha e
       do corredor, fogão e tirar o pó do
       rack da TV
@@ -164,7 +164,7 @@ As regras foram definidas junto com as moradoras e ficam todas configuráveis no
 
 | Frequência | Tarefas (multa) |
 |---|---|
-| Todo dia | Varrer ou aspirar (R$ 3) · Cozinha, mesa e rack da TV (R$ 4) · Sua louça, individual (R$ 8) · Caixinha da gata, sempre da dona (R$ 2) |
+| Todo dia | Varrer ou aspirar (R$ 3) · Cozinha, mesa e rack da TV (R$ 4) · Sua louça, individual (R$ 8) · Caixa de areia, em rodízio só entre as donas dos gatos (R$ 2) |
 | A cada 2 dias | Passar pano (R$ 3) · Tirar o lixo (R$ 5) |
 | A cada 3 dias | Lavar a área (R$ 4) · Banheiro, só entre quem usa o banheiro social (R$ 6) |
 | Toda semana | Geladeira (R$ 4) · Micro-ondas (R$ 2) · Lavar e estender panos e tapetes (R$ 4) · Recolher, dobrar e guardar, sempre outra pessoa (R$ 4) |
@@ -207,10 +207,11 @@ Um rodízio fixo ("cada semana uma zona") não funciona bem quando as tarefas t�
 
 1. Junta as tarefas que caem no dia (pela frequência e pelo deslocamento de cada uma, a partir de uma data de referência).
 2. As **atrasadas** de ontem voltam para quem atrasou. Os pontos delas já foram contados quando a tarefa foi distribuída, então não entram de novo na conta.
-3. As **fixas** vão para a responsável (a gata é da dona dela e fica fora do equilíbrio).
+3. As **fixas** vão sempre para a mesma responsável e não entram na conta de pontos.
 4. As de **rodízio** são ordenadas da mais pesada para a mais leve, e cada uma vai para quem tem **menos pontos acumulados** (histórico + o que já recebeu hoje). Há duas restrições:
    - tarefas restritas a algumas pessoas (banheiro) alternam pelo número de vezes;
-   - "quem estende a roupa não recolhe" (`diferenteDe`).
+   - "quem estende a roupa não recolhe" (`diferenteDe`);
+   - tarefas **fora do equilíbrio** (`foraDoEquilibrio`) só alternam entre as pessoas, sem contar pontos. É o caso da caixa de areia: só as donas dos gatos se revezam, e quem não tem gato não recebe outras tarefas a mais para compensar.
 5. As **individuais** (louça) vão para cada uma que está em casa.
 
 Empates são decididos por uma ordem que gira a cada dia, para a mesma pessoa não ganhar sempre. Em 4 semanas de simulação, os pontos ficam praticamente empatados (98, 99 e 97), mesmo com a Bia fora do rodízio do banheiro: ela compensa pegando mais das outras tarefas.
@@ -338,12 +339,12 @@ Os comandos não diferenciam maiúsculas nem acentos (`Férias` e `ferias` funci
 npm test
 ```
 
-São 58 testes com o `node:test` (nativo do Node, sem dependências), usando a configuração de exemplo e um WhatsApp falso que só anota as mensagens enviadas:
+São 61 testes com o `node:test` (nativo do Node, sem dependências), usando a configuração de exemplo e um WhatsApp falso que só anota as mensagens enviadas:
 
 | Arquivo | O que garante |
 |---|---|
 | `datas.test.js` | leitura de datas como "20/12 a 15/01", virada de ano, fuso |
-| `distribuicao.test.js` | equilíbrio dos pontos, banheiro restrito, quem estende não recolhe, atrasada fica com a mesma pessoa e não muda a divisão futura, multa dobrada |
+| `distribuicao.test.js` | equilíbrio dos pontos, banheiro restrito, caixa de areia fora do equilíbrio, quem estende não recolhe, atrasada fica com a mesma pessoa e não muda a divisão futura, multa dobrada |
 | `tarefas.test.js` | louça só depois das 20h, contestação, trocas |
 | `caixinha.test.js` | descontos por sequência, teto de crédito, vencimento, anistia só do que foi pago |
 | `ausencias.test.js` | antecedência, confirmações, faxinas das férias, viagem sem compensação, semanas neutras |

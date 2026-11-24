@@ -8,7 +8,7 @@ const { marcarFeita, contestar, fecharDia, proporTroca, aceitarTroca } = require
 const DIA = '2026-11-09';
 
 function item(estado, pessoa, tarefaId) {
-  return gerarDia(estado, DIA).itens.find(i => i.pessoa === pessoa && (!tarefaId || i.tarefaId === tarefaId) && i.tipo !== 'fixa');
+  return gerarDia(estado, DIA).itens.find(i => i.pessoa === pessoa && (!tarefaId || i.tarefaId === tarefaId) && i.tipo !== 'fixa' && !i.foraDoEquilibrio);
 }
 
 test('louça só pode ser marcada depois das 20h', () => {
@@ -63,6 +63,17 @@ test('troca só vale com aceite e os pontos vão junto', () => {
   assert.strictEqual(daAna.pessoa, 'Carol');
   assert.strictEqual(estado.carga.Ana, pontosAntes.Ana - daAna.pontos);
   assert.strictEqual(estado.carga.Carol, pontosAntes.Carol + daAna.pontos);
+});
+
+test('troca da caixa de areia não mexe nos pontos', () => {
+  const estado = estadoVazio();
+  const areia = gerarDia(estado, DIA).itens.find(i => i.tarefaId === 'gata');
+  const outra = areia.pessoa === 'Ana' ? 'Bia' : 'Ana';
+  const pontosAntes = { ...estado.carga };
+  proporTroca(estado, DIA, areia.pessoa, areia.n, outra);
+  aceitarTroca(estado, DIA, outra);
+  assert.strictEqual(areia.pessoa, outra);
+  assert.deepStrictEqual(estado.carga, pontosAntes);
 });
 
 test('louça não troca', () => {
