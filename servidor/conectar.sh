@@ -15,4 +15,8 @@ echo "No celular: WhatsApp Business do bot > Configurações > Dispositivos cone
 echo "Quando aparecer 'Bot conectado!', aperte Ctrl+C."
 echo
 trap 'echo; echo "==> Ligando o bot em segundo plano..."; pm2 start servidor/ecosystem.config.js && pm2 save; echo "✅ Pronto. Para ver o que ele está fazendo: pm2 logs casa"; exit 0' INT
-node src/index.js
+# se o WhatsApp Web não abrir de primeira (servidor lento), tenta de novo até conectar ou até o Ctrl+C
+until node src/index.js; do
+  echo "    tentando de novo em 10 s..."
+  sleep 10
+done

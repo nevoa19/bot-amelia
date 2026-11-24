@@ -9,7 +9,11 @@ const { PASTA_DADOS } = require('../estado');
 function criarCliente() {
   return new Client({
     authStrategy: new LocalAuth({ dataPath: path.join(PASTA_DADOS, 'sessao') }),
+    // O padrão é esperar 30 s o WhatsApp Web abrir. No servidor gratuito (1 GB de RAM) ele demora
+    // mais que isso para carregar, então dou 3 minutos.
+    authTimeoutMs: 180000,
     puppeteer: {
+      protocolTimeout: 300000,
       headless: true,
       // No servidor ARM o puppeteer não tem Chrome próprio, então uso o Chromium do sistema.
       // Vazio = Chrome que o puppeteer baixa sozinho (Windows e servidores x86).

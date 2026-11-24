@@ -64,6 +64,8 @@ client.on('message', msg => {
 // Sem internet ou com o servidor reiniciando, o WhatsApp Web não abre. Em vez de ficar travado,
 // o bot sai e o pm2 tenta de novo em 30 s.
 client.initialize().catch(erro => {
-  log('Não consegui iniciar o WhatsApp:', erro.message, '(tentando de novo em instantes)');
+  // às vezes a biblioteca joga só um texto (ex.: 'auth timeout'), sem .message
+  const motivo = (erro && erro.message) || String(erro);
+  log('Não consegui iniciar o WhatsApp:', motivo, '(tentando de novo em instantes)');
   process.exit(1);
 });
