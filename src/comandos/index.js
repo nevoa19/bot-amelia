@@ -4,6 +4,7 @@ const { semAcento } = require('../util/texto');
 const { quemMandou } = require('../whatsapp/remetente');
 const { baixarComprovante } = require('../whatsapp/midia');
 const { textoAjuda } = require('../mensagens');
+const { log } = require('../util/log');
 
 const COMANDOS = {
   ...require('./tarefas'),
@@ -31,7 +32,11 @@ function criarTratador(contexto) {
     if (!msg.body && !msg.hasMedia) return;
 
     const nome = await quemMandou(msg);
-    if (!nome) return; // não é da casa
+    if (!nome) {
+      // não é da casa. No privado fica registrado, para dar para descobrir número errado no config.
+      if (!msg.from.endsWith('@g.us')) log('Mensagem ignorada (não é da casa):', msg.from);
+      return;
+    }
 
     const doGrupo = msg.from.endsWith('@g.us');
     if (doGrupo && !contexto.mensageiro.ehOGrupo(msg.from)) return; // outro grupo

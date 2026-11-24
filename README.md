@@ -4,7 +4,7 @@ Bot de WhatsApp que organiza as tarefas de uma república: divide o trabalho de 
 
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)
 ![whatsapp-web.js](https://img.shields.io/badge/whatsapp--web.js-1.34-25D366?logo=whatsapp&logoColor=white)
-![Testes](https://img.shields.io/badge/testes-61%20passando-brightgreen)
+![Testes](https://img.shields.io/badge/testes-65%20passando-brightgreen)
 ![Dependências](https://img.shields.io/badge/depend%C3%AAncias-3-blue)
 ![Licença PolyForm Noncommercial](https://img.shields.io/badge/licen%C3%A7a-PolyForm%20Noncommercial-orange)
 
@@ -339,7 +339,7 @@ Os comandos não diferenciam maiúsculas nem acentos (`Férias` e `ferias` funci
 npm test
 ```
 
-São 61 testes com o `node:test` (nativo do Node, sem dependências), usando a configuração de exemplo e um WhatsApp falso que só anota as mensagens enviadas:
+São 65 testes com o `node:test` (nativo do Node, sem dependências), usando a configuração de exemplo e um WhatsApp falso que só anota as mensagens enviadas:
 
 | Arquivo | O que garante |
 |---|---|
@@ -350,6 +350,7 @@ São 61 testes com o `node:test` (nativo do Node, sem dependências), usando a c
 | `ausencias.test.js` | antecedência, confirmações, faxinas das férias, viagem sem compensação, semanas neutras |
 | `comandos.test.js` | mensagens de verdade: feito no grupo, contestação anônima, pagamento com e sem comprovante, comprovante repetido |
 | `rotinas.test.js` | manhã, lembretes, fechamento do dia, calendário do mês (fim do mês, dia 8, dia 10), silêncio nas férias |
+| `remetente.test.js` | reconhece a moradora pelo telefone, inclusive quando o WhatsApp manda o id interno (`@lid`) em vez do número |
 
 Para conferir se os testes pegam erros de verdade, alguns bugs foram inseridos de propósito no código (contestação revelando o nome, multa crescendo todo dia, comprovante repetido aceito etc.), e cada um fez pelo menos um teste falhar.
 
