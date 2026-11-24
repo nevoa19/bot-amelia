@@ -71,8 +71,14 @@ Leva uns 5 a 10 minutos. No fim aparece **✅ Instalação concluída.**
    cd ~/bot-casa && bash servidor/conectar.sh
    ```
 3. Escaneie o QR Code com o **WhatsApp Business do bot** > Configurações > Dispositivos conectados.
-4. Quando aparecer **Bot conectado!**, aperte **Ctrl+C**. O bot passa a rodar sozinho em segundo
-   plano e religa sozinho se cair ou se o servidor reiniciar.
+4. Não aperte nada: depois do scan ele sincroniza por 60 s, salva a sessão e liga o bot sozinho no
+   pm2 ("✅ Pronto"). Em 1 ou 2 minutos aparece **Bot conectado!** em `pm2 logs casa`. A partir daí
+   ele religa sozinho se cair ou se o servidor reiniciar.
+
+> **Por que o login é um script separado (`servidor/login.js`)?** Desde 23/11/2026 o WhatsApp Web
+> manda quem não está logado para a página `/login/`, onde o whatsapp-web.js não acha o QR e fica
+> esperando para sempre ([issue #201988](https://github.com/wwebjs/whatsapp-web.js/issues/201988)).
+> Com a sessão já salva a biblioteca funciona normal, então o `login.js` faz só essa primeira parte.
 
 Pronto: pode fechar o PowerShell e desligar o computador. 🎉
 

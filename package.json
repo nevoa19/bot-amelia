@@ -12,11 +12,18 @@
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["whatsapp", "bot", "whatsapp-web.js", "tarefas", "republica"],
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "whatsapp-web.js",
+    "tarefas",
+    "republica"
+  ],
   "author": "Maria Antonia Baraldi Névoa",
   "license": "PolyForm-Noncommercial-1.0.0",
   "dependencies": {
     "node-cron": "^3.0.3",
+    "puppeteer": "^24.38.0",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.34.8"
   }

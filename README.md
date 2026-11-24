@@ -358,7 +358,7 @@ Para conferir se os testes pegam erros de verdade, alguns bugs foram inseridos d
 Para o bot rodar 24h sem depender de um computador ligado, a pasta `servidor/` tem tudo para uma máquina Linux (testado no Ubuntu):
 
 - `instalar.sh` instala Node, Chromium, pm2 e o backup diário;
-- `conectar.sh` faz a primeira conexão pelo QR Code;
+- `conectar.sh` faz a conexão pelo QR Code (usando o `login.js`, que contorna a página nova de login do WhatsApp Web) e liga o bot;
 - `ecosystem.config.js` configura o pm2 para religar o bot se ele cair ou se o servidor reiniciar.
 
 O passo a passo completo, usando a camada gratuita da Oracle Cloud, está em [`servidor/GUIA-SERVIDOR.md`](servidor/GUIA-SERVIDOR.md).

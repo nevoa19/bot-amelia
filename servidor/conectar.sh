@@ -1,22 +1,26 @@
 #!/usr/bin/env bash
 # ============================================================
-#  Primeira conexão com o WhatsApp do bot.
-#  Mostra o QR Code aqui no terminal. Depois que aparecer
-#  "Bot conectado!", aperte Ctrl+C: o bot passa a rodar sozinho no pm2.
+#  Conecta o WhatsApp do bot (primeira vez ou depois de uma desconexão)
+#  e deixa o bot rodando sozinho no pm2.
+#  Se a sessão já estiver salva, ele não pede QR: só confere e liga.
 # ============================================================
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
-pm2 delete casa > /dev/null 2>&1 || true   # garante que não tem outro bot rodando junto
+# o bot não pode estar usando a pasta da sessão ao mesmo tempo
+pm2 delete casa > /dev/null 2>&1 || true
+sleep 3
+pkill -f chrome > /dev/null 2>&1 || true
+
 CHROME_PATH="$(cat servidor/chrome-path.txt 2>/dev/null || true)"
 export CHROME_PATH
 
-echo "No celular: WhatsApp Business do bot > Configurações > Dispositivos conectados > Conectar dispositivo"
-echo "Quando aparecer 'Bot conectado!', aperte Ctrl+C."
+if ! node servidor/login.js; then
+  echo "O bot não foi ligado. Rode de novo: bash servidor/conectar.sh"
+  exit 1
+fi
+
 echo
-trap 'echo; echo "==> Ligando o bot em segundo plano..."; pm2 start servidor/ecosystem.config.js && pm2 save; echo "✅ Pronto. Para ver o que ele está fazendo: pm2 logs casa"; exit 0' INT
-# se o WhatsApp Web não abrir de primeira (servidor lento), tenta de novo até conectar ou até o Ctrl+C
-until node src/index.js; do
-  echo "    tentando de novo em 10 s..."
-  sleep 10
-done
+echo "==> Ligando o bot em segundo plano..."
+pm2 start servidor/ecosystem.config.js && pm2 save
+echo "✅ Pronto. Ele demora 1 ou 2 minutos para aparecer 'Bot conectado!' em: pm2 logs casa"
