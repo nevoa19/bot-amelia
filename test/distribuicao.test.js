@@ -180,3 +180,17 @@ test('fechar o mesmo dia duas vezes não duplica multa', () => {
   assert.ok(primeira.length > 0);
   assert.strictEqual(segunda.length, 0);
 });
+
+test('ninguém pega a mesma tarefa de rodízio dois dias seguidos', () => {
+  const estado = estadoVazio();
+  const fim = somarDias(INICIO, 8 * 7 - 1);
+  viverPeriodo(estado, INICIO, fim);
+  for (let data = somarDias(INICIO, 1); data <= fim; data = somarDias(data, 1)) {
+    const ontem = estado.dias[somarDias(data, -1)].itens;
+    for (const item of estado.dias[data].itens) {
+      if (item.tipo !== 'rodizio' || item.atrasada) continue;
+      const mesmaOntem = ontem.find(i => i.tarefaId === item.tarefaId);
+      if (mesmaOntem) assert.notStrictEqual(item.pessoa, mesmaOntem.pessoa, `${data} ${item.tarefaId}`);
+    }
+  }
+});

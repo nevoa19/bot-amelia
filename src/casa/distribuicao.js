@@ -5,7 +5,7 @@
 // acumulados até agora (histórico + o que já recebeu hoje). Com o tempo os pontos se equilibram,
 // mesmo com tarefas de frequências diferentes.
 //
-// Tarefas com `foraDoEquilibrio` (ex.: caixa de areia, que é só das donas dos gatos) não entram
+// Tarefas com `foraDoEquilibrio` (ex.: caixa de areia, que é só de quem tem pet) não entram
 // nessa conta de pontos: elas só alternam entre as pessoas pelo número de vezes.
 const { config, nomesDasPessoas } = require('../configuracao');
 const { somarDias, diasEntre } = require('../util/datas');
@@ -127,7 +127,7 @@ function gerarDia(estado, data) {
   // e não é distribuída de novo.
   const tarefasNovas = tarefasDeHoje.filter(t => !idsAtrasados.includes(t.id));
 
-  // 2) Tarefas fixas: sempre da mesma pessoa e fora do equilíbrio (a gata é de uma das moradoras)
+  // 2) Tarefas fixas: sempre da mesma pessoa e fora do equilíbrio (ex.: cuidar do pet de uma das moradoras)
   for (const tarefa of tarefasNovas) {
     if (tarefa.tipo === 'fixa' && emCasa.includes(tarefa.responsavel)) {
       itens.push(novoItem(numero, tarefa, tarefa.responsavel, 'fixa'));
@@ -146,6 +146,13 @@ function gerarDia(estado, data) {
       if (!tarefa.pessoas || tarefa.pessoas.includes(nome)) candidatas.push(nome);
     }
     if (candidatas.length === 0) continue; // ex.: as duas do banheiro viajando
+
+    // A mesma pessoa não pega a mesma tarefa duas vezes seguidas (ex.: cozinha ontem e hoje),
+    // a não ser que só ela possa fazer.
+    const quemFezDaUltimaVez = ultimaResponsavel(estado, [], data, tarefa.id);
+    if (quemFezDaUltimaVez && candidatas.length > 1) {
+      candidatas = candidatas.filter(nome => nome !== quemFezDaUltimaVez);
+    }
 
     if (tarefa.diferenteDe) {
       const quemFezAOutra = ultimaResponsavel(estado, itens, data, tarefa.diferenteDe);

@@ -59,7 +59,7 @@ test('fechamento do dia no grupo: o que ficou para trás e de quem', async () =>
   bot.agora = { data: somarDias(DIA, 1), hora: '00:00' };
   await bot.rotinas.fechamento();
   const texto = bot.mensagensPara('grupo')[0];
-  assert.match(texto, /\*Carol\*\n• Lavar a sua louça: multa R\$ 8,00/);
+  assert.match(texto, /\*Carol\*\n• Lavar, secar e guardar a sua louça: multa R\$ 8,00/);
   assert.match(texto, /Ana e Bia fizeram tudo/);
   assert.strictEqual(bot.mensagensPara('Carol').length, 0, 'a multa do dia não vai no privado');
 });
